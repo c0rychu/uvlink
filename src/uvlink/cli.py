@@ -9,7 +9,7 @@ import typer
 from rich.console import Console
 from rich.table import Table
 
-from uvlink.project import Project, Projects, rm_rf
+from uvlink.project import Project, Projects, rm_rf, get_uvlink_dir
 
 app = typer.Typer(
     help="Create .venv in global cache and symlink back.", no_args_is_help=True
@@ -96,15 +96,15 @@ def link(
             typer.echo(f"symlink created: {symlink} -> {venv}")
 
 
-@app.command()
-def list(ctx: typer.Context) -> None:
-    """List status of existing projects"""
+@app.command("ls")
+def list_venvs(ctx: typer.Context) -> None:
+    """List status of existing projects."""
 
     ps = Projects()
     linked = ps.get_list()
     table = Table()
 
-    table.add_column("Cache", no_wrap=True)
+    table.add_column("Cache-ID", no_wrap=True)
     table.add_column("Project Path")
     table.add_column("Is Linked")
 
@@ -114,6 +114,7 @@ def list(ctx: typer.Context) -> None:
             row.project_dir_str,
             "✅" if row.is_linked else "❌",
         )
+    typer.secho(f"\n  Cache Location: {get_uvlink_dir('cache', 'venv')} / <Cache-ID>\n", fg="green")
     console.print(table)
 
 

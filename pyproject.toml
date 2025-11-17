@@ -4,7 +4,9 @@ version = "0.1.0"
 description = "CLI helper for keeping Python venvs outside synced project folders"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "typer>=0.20.0",
+]
 
 [project.scripts]
 uvlink = "uvlink:main"

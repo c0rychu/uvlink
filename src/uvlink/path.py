@@ -1,22 +1,7 @@
-from pathlib import Path
 import hashlib
+import json
 import os
-
-
-def hash_path(path: str | Path, length: int = 12) -> str:
-    """Generate a deterministic short hash for a filesystem path.
-
-    Args:
-        path: Filesystem path to hash; may be relative.
-        length: Number of leading hexadecimal characters to
-            return from the SHA-256 digest. Defaults to 12.
-
-    Returns:
-        str: Prefix of the SHA-256 hash for the resolved absolute path.
-    """
-    abs_path = Path(path).resolve().as_posix()
-    abs_path_hash = hashlib.sha256(abs_path.encode("utf-8")).hexdigest()
-    return abs_path_hash[:length]
+from pathlib import Path
 
 
 def get_uvlink_dir(*subpaths: str | Path) -> Path:
@@ -35,44 +20,83 @@ def get_uvlink_dir(*subpaths: str | Path) -> Path:
     return root
 
 
-def get_project_name(path: str | Path | None = None) -> str:
-    """Return the final directory name for the given project path.
+class Project:
+    """Encapsulate derived paths for a uvlink-managed project.
 
-    Args:
-        path: Optional filesystem path to inspect. Defaults to the current
-            working directory when omitted.
-
-    Returns:
-        str: Basename of the provided or current project path.
+    Attributes:
+        project_dir: Absolute project path resolved from the provided location.
+        project_name: Final path component used to label cache directories.
+        project_hash: Stable hash of ``project_dir`` to avoid collisions.
+        project_cache_dir: Target directory under ``~/.local/share/uvlink``.
+        venv_type: Virtual environment flavor (currently only ``venv``).
     """
-    p = Path(path or Path.cwd()).expanduser()
-    return p.name
 
+    __slots__ = (
+        "project_dir",
+        "project_name",
+        "project_hash",
+        "project_cache_dir",
+        "venv_type",
+    )
 
-def get_project_cache_dir(
-    path: str | Path | None = None, venv_type: str = "venv"
-) -> Path:
-    """Return the cache directory path for the project's virtual environment.
+    def __init__(self, project_dir: str | Path | None = None, venv_type: str = "venv"):
+        """Initialize project metadata from the filesystem.
 
-    Args:
-        path: Optional project directory; defaults to the current working
-            directory when omitted.
-        venv_type: Identifier for the virtual environment flavor. Only
-            "venv" is currently supported.
+        Args:
+            project_dir: Path to the project root; defaults to the current
+                working directory.
+            venv_type: Virtual environment strategy. Only ``"venv"`` is
+                supported at the moment.
 
-    Returns:
-        Path: Location under the uvlink cache tree scoped by project name and
-            hashed path.
+        Raises:
+            NotImplementedError: If an unsupported ``venv_type`` is supplied.
+        """
 
-    Raises:
-        NotImplementedError: If an unsupported ``venv_type`` is provided.
-    """
-    project_dir = Path(path or Path.cwd())
-    project_name = get_project_name(project_dir)
-    project_hash = hash_path(project_dir)
-    # TODO: use Enum for venv_type
-    if venv_type == "venv":
-        cache_dir = get_uvlink_dir("cache", "venv") / f"{project_name}-{project_hash}"
-    else:
-        raise NotImplementedError(f"venv_type = {venv_type} not supported (yet)")
-    return cache_dir
+        self.project_dir = Path(project_dir or Path.cwd()).expanduser().resolve()
+        self.project_hash = self.hash_path(self.project_dir)
+        self.project_name = self.project_dir.name
+        if venv_type in {"venv"}:
+            self.venv_type = venv_type
+        else:
+            raise NotImplementedError(f"venv_type = {venv_type} not supported (yet)")
+        self.project_cache_dir = (
+            get_uvlink_dir("cache", self.venv_type)
+            / f"{self.project_name}-{self.project_hash}"
+        )
+
+    @classmethod
+    def from_json(cls, json_metadata_file: str | Path):
+        """Hydrate a ``Project`` from a JSON metadata file.
+
+        Args:
+            json_metadata_file: Path to ``project.json``
+
+        Returns:
+            Project: Instance configured using the stored metadata.
+
+        Raises:
+            FileNotFoundError: If ``json_metadata_file`` does not exist.
+        """
+
+        pf = Path(json_metadata_file)
+        if pf.exists():
+            data = json.loads(pf.read_text())
+        else:
+            raise FileNotFoundError(f"{json_metadata_file} not found.")
+        return cls(project_dir=data["project_dir"], venv_type=data["venv_type"])
+
+    @staticmethod
+    def hash_path(path: str | Path, length: int = 12) -> str:
+        """Generate a deterministic short hash for a filesystem path.
+
+        Args:
+            path: Filesystem path to hash; may be relative.
+            length: Number of leading hexadecimal characters to
+                return from the SHA-256 digest. Defaults to 12.
+
+        Returns:
+            str: Prefix of the SHA-256 hash for the resolved absolute path.
+        """
+        abs_path = Path(path).expanduser().resolve().as_posix()
+        abs_path_hash = hashlib.sha256(abs_path.encode("utf-8")).hexdigest()
+        return abs_path_hash[:length]

@@ -114,7 +114,10 @@ def list_venvs(ctx: typer.Context) -> None:
             row.project_dir_str,
             "✅" if row.is_linked else "❌",
         )
-    typer.secho(f"\n  Cache Location: {get_uvlink_dir('cache', 'venv')} / <Cache-ID>\n", fg="green")
+    typer.secho(
+        f"\n  Cache Location: {get_uvlink_dir('cache', 'venv')} / <Cache-ID>\n",
+        fg="green",
+    )
     console.print(table)
 
 

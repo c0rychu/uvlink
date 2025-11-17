@@ -35,8 +35,13 @@ test: ## Pytest
 	uv run pytest
 
 
+test-coverage: ## Generate test coverage report
+	uv run pytest --cov=uvlink
+	
+
 ci: check-pyproject.toml check-lint check-fmt check-type test ## Run lint, format check, type check, and tests (check only)
 
 
 pre-commit: ## Run pre-commit hooks (only works after `git add`)
 	uv run pre-commit run --all-files
+

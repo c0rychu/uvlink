@@ -9,7 +9,7 @@ dependencies = [
 ]
 
 [project.scripts]
-uvlink = "uvlink:main"
+uvlink = "uvlink.cli:app"
 
 [build-system]
 requires = ["uv_build>=0.9.9,<0.10.0"]

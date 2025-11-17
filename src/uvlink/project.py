@@ -1,8 +1,22 @@
-from datetime import datetime
 import hashlib
 import json
 import os
+import shutil
+from datetime import datetime
 from pathlib import Path
+
+
+def rm_rf(path: Path) -> None:
+    """Remove a filesystem path whether it's a file, symlink, or directory.
+
+    Args:
+        path (Path): Filesystem target to delete recursively.
+    """
+
+    if path.is_symlink() or path.is_file():
+        path.unlink()
+    else:
+        shutil.rmtree(path)
 
 
 def get_uvlink_dir(*subpaths: str | Path) -> Path:

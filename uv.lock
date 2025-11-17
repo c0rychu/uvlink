@@ -345,6 +345,7 @@ name = "uvlink"
 version = "0.2.0"
 source = { editable = "." }
 dependencies = [
+    { name = "rich" },
     { name = "typer" },
 ]
 
@@ -357,7 +358,10 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "typer", specifier = ">=0.20.0" }]
+requires-dist = [
+    { name = "rich", specifier = ">=14.2.0" },
+    { name = "typer", specifier = ">=0.20.0" },
+]
 
 [package.metadata.requires-dev]
 dev = [

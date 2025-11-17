@@ -2,6 +2,7 @@ import hashlib
 import json
 import os
 import shutil
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 
@@ -134,3 +135,52 @@ class Project:
         metadata_path.parent.mkdir(parents=True, exist_ok=True)
         metadata_path.write_text(json.dumps(metadata, indent=2, sort_keys=True) + "\n")
         return metadata_path
+
+
+@dataclass(slots=True)
+class ProjectLinkInfo:
+    """Snapshot describing whether a cached project is currently linked."""
+
+    project: Project
+    project_name_hash: str
+    project_dir_str: str
+    is_linked: bool
+
+
+class Projects(list[Project]):
+    """Iterable helper that discovers cached projects and their link status."""
+
+    def __init__(self, base_path: str | Path = get_uvlink_dir("cache", "venv")):
+        """Load every ``project.json`` nested directly under ``base_path``.
+
+        Args:
+            base_path: Directory that stores cached project folders.
+        """
+
+        self.base_path = Path(base_path)
+        for file in self.base_path.glob("*/project.json"):
+            self.append(Project.from_json(file))
+
+    def get_list(self) -> list[ProjectLinkInfo]:
+        """Return link information for each discovered project.
+
+        Returns:
+            list[ProjectLinkInfo]: One entry per cached project, detailing
+                whether its ``.venv`` symlink currently targets uvlink's cache.
+        """
+
+        linked: list[ProjectLinkInfo] = []
+        for p in self:
+            symlink = p.project_dir / ".venv"
+            is_linked = (
+                symlink.is_symlink() and symlink.resolve().parent == p.project_cache_dir
+            )
+            linked.append(
+                ProjectLinkInfo(
+                    project=p,
+                    project_name_hash=f"{p.project_name}-{p.project_hash}",
+                    project_dir_str=p.project_dir.as_posix(),
+                    is_linked=is_linked,
+                )
+            )
+        return linked

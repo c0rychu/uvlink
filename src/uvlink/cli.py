@@ -3,13 +3,12 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.console import Console
 from rich.table import Table
 
-from uvlink.project import Project, Projects, rm_rf, get_uvlink_dir
+from uvlink.project import Project, Projects, get_uvlink_dir, rm_rf
 
 app = typer.Typer(
     help="Create .venv in global cache and symlink back.", no_args_is_help=True
@@ -21,7 +20,7 @@ console = Console()
 @app.callback()
 def main(
     ctx: typer.Context,
-    project_dir: Optional[Path] = typer.Option(
+    project_dir: Path | None = typer.Option(
         Path.cwd(),
         "--project-dir",
         "-p",
@@ -32,7 +31,7 @@ def main(
         resolve_path=True,
         help="Path to the project root; defaults to the current working directory.",
     ),
-    dry_run: Optional[bool] = typer.Option(
+    dry_run: bool | None = typer.Option(
         False, "--dry-run", help="Show what would be executed without actually run it."
     ),
 ) -> None:
@@ -45,7 +44,7 @@ def main(
 @app.command()
 def link(
     ctx: typer.Context,
-    dry_run: Optional[bool] = typer.Option(
+    dry_run: bool | None = typer.Option(
         False, "--dry-run", help="Show what would be executed without actually run it."
     ),
 ) -> None:

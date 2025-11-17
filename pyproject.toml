@@ -1,25 +1,39 @@
+[build-system]
+build-backend = "uv_build"
+requires = [ "uv-build>=0.9.9,<0.10" ]
+
 [project]
 name = "uvlink"
 version = "0.3.0"
 description = "CLI helper for keeping Python venvs outside synced project folders"
 readme = "README.md"
 requires-python = ">=3.12"
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+]
 dependencies = [
-    "rich>=14.2.0",
-    "typer>=0.20.0",
+  "rich>=14.2",
+  "typer>=0.20",
 ]
 
-[project.scripts]
-uvlink = "uvlink.cli:app"
-
-[build-system]
-requires = ["uv_build>=0.9.9,<0.10.0"]
-build-backend = "uv_build"
+scripts.uvlink = "uvlink.cli:app"
 
 [dependency-groups]
 dev = [
-    "black>=25.11.0",
-    "pre-commit>=4.4.0",
-    "pytest>=9.0.1",
-    "ruff>=0.14.5",
+  "black>=25.11",
+  "pre-commit>=4.4",
+  "pyproject-fmt>=2.11.1",
+  "pyright>=1.1.407",
+  "pytest>=9.0.1",
+  "ruff>=0.14.5",
 ]
+
+[tool.ruff]
+select = [ "E", "F", "I", "B", "UP" ]
+
+[tool.pyright]
+typeCheckingMode = "strict"
+include = [ "src" ]

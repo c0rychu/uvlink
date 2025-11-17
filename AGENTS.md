@@ -10,7 +10,8 @@ Use [uv](https://docs.astral.sh/uv/) for repeatable environments:
 $ uv run pytest                # run the test suite
 $ uv run ruff check .          # lint
 $ uv run black .               # format
-$ make run-pre-commit-ruff-black  # convenience target running Ruff + Black via pre-commit (only works after `git add` has staged files)
+$ make ci                      # run all checks (lint, format, typecheck, tests)
+$ make fix                     # auto-fix formatting and lint issues
 ```
 
 ## Coding Style & Naming Conventions

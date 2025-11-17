@@ -118,5 +118,21 @@ def list_venvs(ctx: typer.Context) -> None:
     console.print(table)
 
 
+@app.command()
+def gc(ctx: typer.Context) -> None:
+    """Remove cached venvs whose projects are no longer linked."""
+
+    ps = Projects()
+    link_infos = ps.get_list()
+    for link_info in link_infos:
+        if not link_info.is_linked:
+            proj_cache = link_info.project.project_cache_dir
+            if typer.confirm(f"Remove {proj_cache.as_posix()} ?", default=True):
+                typer.secho(f"Removing {proj_cache.as_posix()}", fg="red")
+                rm_rf(proj_cache)
+            else:
+                typer.echo(f"Skiped {proj_cache.as_posix()}")
+
+
 if __name__ == "__main__":  # pragma: no cover - convenience execution
     app()

@@ -2,6 +2,14 @@
 
 Note: Trying to follow the essentials of [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [SemVer](https://semver.org/spec/v2.0.0.html).
 
+## 0.4.1
+
+### Added
+- `uvlink --version` / `uvlink -V` flag prints the installed tool version and exits.
+
+### Changed
+- CLI help banner now shows the current uvlink version for quick reference.
+
 ## 0.4.0
 
 ### Changed

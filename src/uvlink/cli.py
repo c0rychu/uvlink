@@ -8,13 +8,24 @@ import typer
 from rich.console import Console
 from rich.table import Table
 
+from uvlink import __version__
 from uvlink.project import Project, Projects, get_uvlink_dir, rm_rf
 
 app = typer.Typer(
-    help="Create .venv in global cache and symlink back.", no_args_is_help=True
+    help=f"uvlink {__version__} — create .venv in global cache and symlink back.",
+    no_args_is_help=True,
 )
 
 console = Console()
+
+
+def version_callback(value: bool) -> bool:
+    """Print version when the eager flag is used."""
+
+    if value:
+        typer.echo(f"uvlink {__version__}")
+        raise typer.Exit()
+    return value
 
 
 @app.callback()
@@ -33,6 +44,14 @@ def main(
     ),
     dry_run: bool | None = typer.Option(
         False, "--dry-run", help="Show what would be executed without actually run it."
+    ),
+    _version: bool = typer.Option(  # noqa: B008
+        False,
+        "--version",
+        "-V",
+        is_eager=True,
+        callback=version_callback,
+        help="Show uvlink version and exit.",
     ),
 ) -> None:
     ctx.obj = {

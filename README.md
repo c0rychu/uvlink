@@ -67,6 +67,8 @@ $ uvlink gc
 Removes cached environments for projects that no longer have working symlinks, freeing up disk space.
 
 
+## Demo
+![](docs/fig/uvlink-demo@2x.gif)
 
 ## Advanced Usage
 

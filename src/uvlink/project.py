@@ -6,6 +6,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 
+from . import __version__
+
 
 def rm_rf(path: Path) -> None:
     """Remove a filesystem path whether it's a file, symlink, or directory.
@@ -128,6 +130,7 @@ class Project:
             "project_name": self.project_name,
             "project_hash": self.project_hash,
             "venv_type": self.venv_type,
+            "uvlink_version": __version__,
             "created_at": datetime.now().astimezone().isoformat(timespec="seconds"),
         }
         metadata_path = self.project_cache_dir / "project.json"

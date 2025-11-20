@@ -81,6 +81,8 @@ class Project:
             get_uvlink_dir("cache")
             / f"{self.project_name}-{self.project_hash}-{self.venv_type}"
         )
+        # FIXME: make cache root configurable
+        #        now, it breaks the --cache-root option in uvlink ls and gc
 
     @classmethod
     def from_json(cls, json_metadata_file: str | Path):

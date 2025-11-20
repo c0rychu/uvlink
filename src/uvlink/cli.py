@@ -112,10 +112,20 @@ def link(
 
 
 @app.command("ls")
-def list_venvs(ctx: typer.Context) -> None:
+def list_venvs(
+    ctx: typer.Context,
+    cache_root: Path | None = typer.Option(  # noqa: B008
+        None,
+        "--cache-root",
+        help=(
+            "Override the cache root directory "
+            "(defaults to XDG_DATA_HOME/uvlink/cache)."
+        ),
+    ),
+) -> None:
     """List status of existing projects."""
 
-    ps = Projects()
+    ps = Projects(base_path=cache_root) if cache_root else Projects()
     linked = ps.get_list()
     table = Table(box=box.MINIMAL)
 
@@ -129,18 +139,29 @@ def list_venvs(ctx: typer.Context) -> None:
             row.project_dir_str,
             "✅" if row.is_linked else "❌",
         )
+    cache_location = cache_root if cache_root else get_uvlink_dir("cache")
     typer.secho(
-        f"\n  Cache Location: {get_uvlink_dir('cache')} / <Cache-ID>\n",
+        f"\n  Cache Location: {cache_location} / <Cache-ID>\n",
         fg="green",
     )
     console.print(table)
 
 
 @app.command()
-def gc(ctx: typer.Context) -> None:
+def gc(
+    ctx: typer.Context,
+    cache_root: Path | None = typer.Option(  # noqa: B008
+        None,
+        "--cache-root",
+        help=(
+            "Override the cache root directory "
+            "(defaults to XDG_DATA_HOME/uvlink/cache)."
+        ),
+    ),
+) -> None:
     """Remove cached venvs whose projects are no longer linked."""
 
-    ps = Projects()
+    ps = Projects(base_path=cache_root) if cache_root else Projects()
     link_infos = ps.get_list()
     for link_info in link_infos:
         if not link_info.is_linked:

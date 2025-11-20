@@ -76,7 +76,7 @@ class Project:
         self.project_dir = Path(project_dir or Path.cwd()).expanduser().resolve()
         self.project_hash = self.hash_path(self.project_dir)
         self.project_name = self.project_dir.name
-        self.venv_type = self._sanitize_venv_type(venv_type)
+        self.venv_type = self.sanitize_venv_type(venv_type)
         self.project_cache_dir = (
             get_uvlink_dir("cache")
             / f"{self.project_name}-{self.project_hash}-{self.venv_type}"
@@ -140,7 +140,7 @@ class Project:
         return metadata_path
 
     @staticmethod
-    def _sanitize_venv_type(raw_value: str | None) -> str:
+    def sanitize_venv_type(raw_value: str | None) -> str:
         """Validate the venv directory name is a single, portable filename."""
 
         candidate = (raw_value or ".venv").strip()

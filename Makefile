@@ -1,4 +1,4 @@
-.PHONY: all fix check-lint check-fmt check-type check-pyproject.toml test ci pre-commit help
+.PHONY: help all fix check-lint check-fmt check-type check-pyproject.toml test test-coverage ci pre-commit docs-serve-local
 
 
 help: ## Show this help message
@@ -44,4 +44,8 @@ ci: check-pyproject.toml check-lint check-fmt check-type test ## Run lint, forma
 
 pre-commit: ## Run pre-commit hooks (only works after `git add`)
 	uv run pre-commit run --all-files
+
+
+docs-serve-local: ## Serve documentation locally
+	uv run zensical serve
 

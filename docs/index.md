@@ -21,10 +21,3 @@ Cloud services like Dropbox, iCloud, or Google Drive often struggle with the tho
 
 !!! warning "Important Note on Caching"
     Since `v0.6.0`, the cache directory includes the venv type in its folder name and stores the environment under a matching subdirectory. If you have caches from older versions, delete them and rerun `uvlink link` to migrate.
-
-## Key Features
-
--   **Cloud Friendly**: Keep your synced folders clean.
--   **Seamless**: Works with standard Python tooling.
--   **Flexible**: Support for custom venv names (e.g., `.venv-prod`).
--   **Safe**: Validates names and handles collisions.

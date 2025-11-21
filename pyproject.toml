@@ -22,6 +22,11 @@ dependencies = [
   "typer>=0.20",
 ]
 
+urls.Changelog = "https://c0rychu.github.io/uvlink/CHANGELOG/"
+urls.Documentation = "https://c0rychu.github.io/uvlink/"
+urls.Homepage = "https://github.com/c0rychu/uvlink"
+urls.Issues = "https://github.com/c0rychu/uvlink/issues"
+urls.Repository = "https://github.com/c0rychu/uvlink.git"
 scripts.uvlink = "uvlink.cli:app"
 
 [dependency-groups]

@@ -1,3 +1,7 @@
+---
+icon: lucide/rocket
+---
+
 # uvlink
 
 [![PyPI - Version](https://img.shields.io/pypi/v/uvlink)](https://pypi.org/project/uvlink/)
@@ -15,7 +19,7 @@ Cloud services like Dropbox, iCloud, or Google Drive often struggle with the tho
 
 `uvlink` solves this by moving the heavy `.venv` directory to a local cache (outside the synced folder) and replacing it with a lightweight symlink. Your cloud service syncs the symlink (negligible size), while your tools (VS Code, terminal) follow the link seamlessly.
 
-!!! caution "Important Note on Caching"
+!!! warning "Important Note on Caching"
     Since `v0.6.0`, the cache directory includes the venv type in its folder name and stores the environment under a matching subdirectory. If you have caches from older versions, delete them and rerun `uvlink link` to migrate.
 
 ## Key Features

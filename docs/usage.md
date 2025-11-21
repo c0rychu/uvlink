@@ -1,3 +1,7 @@
+---
+icon: lucide/terminal
+---
+
 # Usage
 
 ## Quick Start

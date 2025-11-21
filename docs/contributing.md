@@ -1,3 +1,7 @@
+---
+icon: lucide/git-pull-request
+---
+
 # Contributing
 
 We welcome contributions! Please follow these guidelines to ensure a smooth process.

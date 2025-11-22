@@ -104,7 +104,7 @@ def test_ls(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
 
     # Use --cache-root to specify the cache directory explicitly
     cache_dir = fake_home / "uvlink" / "cache"
-    result = runner.invoke(app, ["ls", "--cache-root", str(cache_dir)])
+    result = runner.invoke(app, ["--cache-root", str(cache_dir), "ls"])
     assert result.exit_code == 0
 
     # Verify table structure

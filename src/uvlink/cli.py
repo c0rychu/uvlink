@@ -43,6 +43,14 @@ def main(
         resolve_path=True,
         help="Path to the project root; defaults to the current working directory.",
     ),
+    cache_root: Path | None = typer.Option(  # noqa: B008
+        None,
+        "--cache-root",
+        help=(
+            "Override the cache root directory "
+            "(defaults to XDG_DATA_HOME/uvlink/cache)."
+        ),
+    ),
     dry_run: bool | None = typer.Option(
         False, "--dry-run", help="Show what would be executed without actually run it."
     ),
@@ -57,7 +65,8 @@ def main(
 ) -> None:
     ctx.obj = {
         "dry_run": dry_run,
-        "proj": Project(project_dir=project_dir),
+        "cache_root": cache_root,
+        "proj": Project(project_dir=project_dir, cache_root=cache_root),
     }
 
 
@@ -76,7 +85,10 @@ def link(
     """Create (or update) the symlink in project pointing to the cached venv."""
     # Get project_dir from ctx and update venv_type from CLI argument
     base_proj: Project = ctx.obj["proj"]
-    proj = Project(project_dir=base_proj.project_dir, venv_type=venv_type)
+    cache_root = ctx.obj["cache_root"]
+    proj = Project(
+        project_dir=base_proj.project_dir, venv_type=venv_type, cache_root=cache_root
+    )
 
     # Set dry_run flag
     dry_run = dry_run or ctx.obj["dry_run"]
@@ -114,17 +126,9 @@ def link(
 @app.command("ls")
 def list_venvs(
     ctx: typer.Context,
-    cache_root: Path | None = typer.Option(  # noqa: B008
-        None,
-        "--cache-root",
-        help=(
-            "Override the cache root directory "
-            "(defaults to XDG_DATA_HOME/uvlink/cache)."
-        ),
-    ),
 ) -> None:
     """List status of existing projects."""
-
+    cache_root = ctx.obj["cache_root"]
     ps = Projects(base_path=cache_root) if cache_root else Projects()
     linked = ps.get_list()
     table = Table(box=box.MINIMAL)
@@ -150,17 +154,9 @@ def list_venvs(
 @app.command()
 def gc(
     ctx: typer.Context,
-    cache_root: Path | None = typer.Option(  # noqa: B008
-        None,
-        "--cache-root",
-        help=(
-            "Override the cache root directory "
-            "(defaults to XDG_DATA_HOME/uvlink/cache)."
-        ),
-    ),
 ) -> None:
     """Remove cached venvs whose projects are no longer linked."""
-
+    cache_root = ctx.obj["cache_root"]
     ps = Projects(base_path=cache_root) if cache_root else Projects()
     link_infos = ps.get_list()
     for link_info in link_infos:

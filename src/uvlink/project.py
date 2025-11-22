@@ -61,7 +61,12 @@ class Project:
         "venv_type",
     )
 
-    def __init__(self, project_dir: str | Path | None = None, venv_type: str = ".venv"):
+    def __init__(
+        self,
+        project_dir: str | Path | None = None,
+        venv_type: str = ".venv",
+        cache_root: str | Path | None = None,
+    ):
         """Initialize project metadata from the filesystem.
 
         Args:
@@ -77,12 +82,13 @@ class Project:
         self.project_hash = self.hash_path(self.project_dir)
         self.project_name = self.project_dir.name
         self.venv_type = self.sanitize_venv_type(venv_type)
+        if cache_root is None:
+            cache_root = get_uvlink_dir("cache")
+        else:
+            cache_root = Path(cache_root).expanduser().resolve()
         self.project_cache_dir = (
-            get_uvlink_dir("cache")
-            / f"{self.project_name}-{self.project_hash}-{self.venv_type}"
+            cache_root / f"{self.project_name}-{self.project_hash}-{self.venv_type}"
         )
-        # FIXME: make cache root configurable
-        #        now, it breaks the --cache-root option in uvlink ls and gc
 
     @classmethod
     def from_json(cls, json_metadata_file: str | Path):
@@ -101,9 +107,14 @@ class Project:
         pf = Path(json_metadata_file)
         if pf.exists():
             data = json.loads(pf.read_text())
+            cache_root = pf.parent.parent  # TODO: Think about this.
+            return cls(
+                project_dir=data["project_dir"],
+                venv_type=data["venv_type"],
+                cache_root=cache_root,
+            )
         else:
             raise FileNotFoundError(f"{json_metadata_file} not found.")
-        return cls(project_dir=data["project_dir"], venv_type=data["venv_type"])
 
     @staticmethod
     def hash_path(path: str | Path, length: int = 12) -> str:
@@ -188,7 +199,7 @@ class Projects(list[Project]):
         self.base_path = Path(base_path)
         for file in self.base_path.glob("*/project.json"):
             self.append(Project.from_json(file))
-        
+
         self.sort(key=lambda p: (p.project_dir.as_posix(), p.venv_type))
 
     def get_list(self) -> list[ProjectLinkInfo]:

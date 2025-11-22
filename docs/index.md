@@ -40,3 +40,7 @@ uv sync
 ```
 
 This installs dependencies into the cached environment via the symlink.
+
+
+## Demo
+![](fig/uvlink-demo@2x.gif)

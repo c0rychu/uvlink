@@ -188,6 +188,8 @@ class Projects(list[Project]):
         self.base_path = Path(base_path)
         for file in self.base_path.glob("*/project.json"):
             self.append(Project.from_json(file))
+        
+        self.sort(key=lambda p: (p.project_dir.as_posix(), p.venv_type))
 
     def get_list(self) -> list[ProjectLinkInfo]:
         """Return link information for each discovered project.

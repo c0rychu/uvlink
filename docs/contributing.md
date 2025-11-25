@@ -13,7 +13,7 @@ We welcome contributions! Please follow these guidelines to ensure a smooth proc
     -   `project.py`: Project and cache helpers.
 -   **`tests/`**: Test suite (mirrors `src` layout).
 -   **`pyproject.toml`**: Configuration and metadata.
--   **`README.md`** & **`CHANGELOG.md`**: Documentation.
+-   **`README.md`** & **`docs/`**: Documentation.
 
 ## Development Workflow
 

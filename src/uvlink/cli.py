@@ -96,7 +96,7 @@ def link(
     symlink = proj.project_dir / f"{proj.venv_type}"
     venv = proj.project_cache_dir / f"{proj.venv_type}"
     if dry_run:
-        typer.echo(f"ln -s {venv} {symlink}")
+        typer.echo(f"Would execute: ln -s {venv} {symlink}")
         typer.Exit()
 
     else:
@@ -154,19 +154,27 @@ def list_venvs(
 @app.command()
 def gc(
     ctx: typer.Context,
+    dry_run: bool | None = typer.Option(
+        False, "--dry-run", help="Show what would be executed without actually run it."
+    ),
 ) -> None:
     """Remove cached venvs whose projects are no longer linked."""
+    dry_run = dry_run or ctx.obj["dry_run"]
     cache_root = ctx.obj["cache_root"]
     ps = Projects(base_path=cache_root) if cache_root else Projects()
     link_infos = ps.get_list()
     for link_info in link_infos:
         if not link_info.is_linked:
             proj_cache = link_info.project.project_cache_dir
-            if typer.confirm(f"Remove {proj_cache.as_posix()} ?", default=True):
-                typer.secho(f"Removing {proj_cache.as_posix()}", fg="red")
-                rm_rf(proj_cache)
+            if dry_run:
+                typer.echo(f"Would remove {proj_cache.as_posix()}")
+                continue
             else:
-                typer.echo(f"Skiped {proj_cache.as_posix()}")
+                if typer.confirm(f"Remove {proj_cache.as_posix()} ?", default=True):
+                    typer.secho(f"Removing {proj_cache.as_posix()}", fg="red")
+                    rm_rf(proj_cache)
+                else:
+                    typer.echo(f"Skiped {proj_cache.as_posix()}")
 
 
 if __name__ == "__main__":  # pragma: no cover - convenience execution

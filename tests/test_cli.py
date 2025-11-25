@@ -38,7 +38,7 @@ def test_link_dry_run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     assert result.exit_code == 0
 
     # Verify the output format matches what would be executed
-    expected_output = f"ln -s {expected_venv} {expected_symlink}"
+    expected_output = f"Would execute: ln -s {expected_venv} {expected_symlink}"
     assert result.stdout.strip() == expected_output
 
     # Verify that no symlink was actually created (dry-run should not create anything)

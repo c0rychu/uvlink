@@ -2,7 +2,7 @@
 [![PyPI - Version](https://img.shields.io/pypi/v/uvlink)](https://pypi.org/project/uvlink/)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/uvlink)](https://pypi.org/project/uvlink/)
 
-`uvlink` is a CLI tool that moves `.venv` folders into a local cache and creates a symlink in your project, so cloud services like Dropbox or iCloud only sync your actual code—not hundreds of megabytes of dependencies.
+`uvlink` is a Python CLI tool that caches virtual environments outside your project and symlinks them back. Perfect for `uv` users who sync code to Dropbox, Google Drive, or iCloud. Only your source code syncs, not gigabytes of `.venv` dependencies.
 
 - [Documentation](https://c0rychu.github.io/uvlink/)
 - [Changelog](docs/CHANGELOG.md)
@@ -40,30 +40,40 @@ $ pip install uvlink
 
 ## Quick Start
 
-Navigate to any Python project (which may be created by `uv init` for instance) and run:
+Navigate to any Python project (which may be created by `uv init` for instance) and run `uvlink link`:
 
 ```bash
 $ cd /path/to/your/project
 $ uvlink link
 ```
 
-This creates a `.venv` symlink in your project pointing to a cached environment under `~/.local/share/uvlink/cache/<project-name>-<hash>-.venv/.venv`. Now your cloud service ignores the heavy virtual environment files.
-
-After linking, you can do for example `uv sync` to install dependencies into `.venv`, which is now a symlink to the cached environment.
-
-Need a different directory name (for example to match a tooling convention)? Pass it as an optional argument `[VENV_TYPE]`, which defaults to `.venv`:
+The `link` command creates a `.venv` symlink in your project pointing to a cached environment. By default, it uses `.venv` as the symlink name because `uv sync` installs into `.venv` by default. You can use a different name if needed, for example:
 
 ```bash
-$ uvlink link [VENV_TYPE]
+$ uvlink link myenv
 ```
 
-**List all linked projects:**
+This creates a `myenv` symlink instead. 
+
+The cached environment is stored under `$XDG_DATA_HOME/uvlink/cache/<project-name>-<hash>-<venv_name>/<venv_name>` (or `~/.local/share/uvlink/cache/...` if `XDG_DATA_HOME` is not set).
+
+After linking, you can use the virtual environment just like you would with `uv` whithin the project directory:
+
+```bash
+$ source .venv/bin/activate  # Activate the environment
+$ uv sync                    # Install dependencies into the cached .venv
+$ uv run python script.py    # Run commands in the environment
+```
+
+Since `.venv` exists as a symlink in your project directory, all standard activation methods work. Your cloud service will ignore the heavy virtual environment files since they're stored in the cache.
+
+**List all cached environments:**
 
 ```bash
 $ uvlink ls
 ```
 
-Shows all projects having cached environments and whether their symlinks are still linked.
+Shows all projects with cached environments and their link status. Projects where the symlink has been removed (e.g., via `rm .venv`) will show as "Not Linked" (❌). You can relink them by running `uvlink link` again in that project directory.
 
 **Clean up unlinked caches:**
 
@@ -71,7 +81,7 @@ Shows all projects having cached environments and whether their symlinks are sti
 $ uvlink gc
 ```
 
-Removes cached environments for projects that no longer have working symlinks, freeing up disk space.
+Removes cached environments for projects that no longer have working symlinks (marked as "Not Linked" in `uvlink ls`), freeing up disk space.
 
 
 ## Demo
@@ -79,7 +89,7 @@ Removes cached environments for projects that no longer have working symlinks, f
 
 ## Advanced Usage
 
-`uvlink` ships with a [Typer](https://typer.tiangolo.com/) CLI. Run `uvlink --help` for all options.
+`uvlink` ships with a [Typer](https://typer.tiangolo.com/) CLI. Run `uvlink --help` for all available options and commands.
 
 **Specify a project directory:**
 
@@ -99,18 +109,44 @@ Custom `[VENV_TYPE]` are helpful when sharing a cache across tooling expectation
 
 **Custom Cache Location:**
 
-```bash
-$ uvlink --cache-root /path/to/cache link
-$ uvlink --cache-root /path/to/cache ls
-$ uvlink --cache-root /path/to/cache gc
-```
+The default cache location is `$XDG_DATA_HOME/uvlink/cache` if `XDG_DATA_HOME` is set, otherwise it falls back to `~/.local/share/uvlink/cache`.
 
-Overrides the default cache directory (`~/.local/share/uvlink/cache`). This applies to all commands (`link`, `ls`, `gc`).
+To override the cache location, you can either:
+
+1. Set the `XDG_DATA_HOME` environment variable:
+   ```bash
+   $ export XDG_DATA_HOME=/my/custom/path
+   $ uvlink link
+   ```
+
+2. Use the `--cache-root` option (must be used consistently across all commands):
+   ```bash
+   $ uvlink --cache-root /path/to/cache link
+   $ uvlink --cache-root /path/to/cache ls
+   $ uvlink --cache-root /path/to/cache gc
+   ```
+
+   Note: When using `--cache-root`, you must specify it for every command (`link`, `ls`, `gc`). Consider setting up a shell alias to avoid repetition:
+   ```bash
+   $ alias uvlink='uvlink --cache-root /my/cache/root'
+   ```
 
 
 
-## Notes
-uvlink stores environments under `~/.local/share/uvlink/cache/<project-name>-<hash>-<venv_type>/<venv_type>` and makes a symlink `./.venv` back into that. Each project receives a stable hash based on its absolute path, so repeated runs target the same cache location.
+## How It Works
+
+`uvlink` stores environments under `$XDG_DATA_HOME/uvlink/cache/<project-name>-<hash>-<venv_name>/<venv_name>` (or `~/.local/share/uvlink/cache/...` if `XDG_DATA_HOME` is not set) and creates a symlink `<venv_name>` in your project directory pointing to that cached location.
+
+Each project receives a stable hash based on its absolute path, so repeated runs target the same cache location. The symlink behaves like a regular `.venv` directory for most purposes. You can activate it with `source .venv/bin/activate` or use `uv run` commands as usual.
+
+**What `uvlink` does:**
+- Creates a symlink `.venv` (or your custom name) in your project directory
+- Stores the actual virtual environment in a centralized cache location
+
+**What `uvlink` does NOT do:**
+- It does not install packages (use `uv sync`, `uv add`, `uv pip install`, etc.)
+- It does not remove symlinks (use `rm .venv` if you want to unlink and run `uvlink gc` after unlink to clean up the unlinked caches.)
+- It does not manage or activate environments (use standard `uv` commands)
 
 
 

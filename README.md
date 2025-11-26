@@ -17,7 +17,7 @@
 - macOS or Linux with symlink support
 
 > [!WARNING]
-> uvlink is currently only tested on Apple Silicon (M-series) machines running macOS Tahoe. Other operating systems or architectures have not been validated yet.
+> Windows is not supported yet, but contributions/discussions/testing are welcome! See [related issues with `os:Windows` label](https://github.com/c0rychu/uvlink/issues?q=is%3Aissue%20state%3Aopen%20label%3Aos%3AWindows) for more details.
 
 
 

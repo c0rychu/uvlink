@@ -30,4 +30,6 @@ def test_create_windows_junction(tmp_path: Path):
 
 def test_create_windows_junction_invalid_target(tmp_path: Path):
     with pytest.raises(ValueError):
-        create_windows_junction(symlink=tmp_path / "any", target=tmp_path / "nonexistent")
+        create_windows_junction(
+            symlink=tmp_path / "any", target=tmp_path / "nonexistent"
+        )

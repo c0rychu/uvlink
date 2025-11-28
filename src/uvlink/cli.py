@@ -117,7 +117,7 @@ def link(
                 typer.echo("Cancelled.")
                 raise typer.Abort()
 
-        execute_symlink(symlink, venv)
+        create_symlink(symlink, venv)
         proj.save_json_metadata_file()
         typer.echo(f"symlink created: {symlink} -> {venv}")
 

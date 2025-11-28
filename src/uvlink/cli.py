@@ -10,7 +10,7 @@ from rich.console import Console
 from rich.table import Table
 
 from uvlink import __version__
-from uvlink.path_utils import execute_symlink, path_exists
+from uvlink.path_utils import create_symlink, path_exists
 from uvlink.project import Project, Projects, get_uvlink_dir, rm_rf
 
 app = typer.Typer(

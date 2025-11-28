@@ -44,6 +44,7 @@ def test_link_dry_run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     # Verify that no symlink was actually created (dry-run should not create anything)
     assert not expected_symlink.exists()
     assert not expected_symlink.is_symlink()
+    assert not expected_symlink.is_junction()
 
 
 def test_link_creation(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -67,7 +68,7 @@ def test_link_creation(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     assert expected_output in result.stdout
 
     # Verify symlink exists
-    assert expected_symlink.is_symlink()
+    assert expected_symlink.is_symlink() or expected_symlink.is_junction()
 
     # Verify the symlink actually points to the expected cache directory
     assert expected_symlink.resolve() == expected_venv.resolve()
@@ -99,8 +100,7 @@ def test_ls(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     p2 = Project(project_dir=project2_dir)
     # Remove the symlink to make it unlinked
     symlink2 = project2_dir / ".venv"
-    if symlink2.exists() or symlink2.is_symlink():
-        symlink2.unlink()
+    symlink2.unlink(missing_ok=True)
 
     # Use --cache-root to specify the cache directory explicitly
     cache_dir = fake_home / "uvlink" / "cache"
@@ -113,8 +113,7 @@ def test_ls(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     assert "Is Linked" in result.stdout
 
     # Verify cache location message
-    assert "Cache Location:" in result.stdout
-    assert "uvlink/cache" in result.stdout
+    assert f"Cache Location: {cache_dir}" in result.stdout
 
     # Verify both projects appear and have correct linked status
     output_lines = result.stdout.split("\n")

@@ -2,9 +2,9 @@ name: CI Tests
 
 on:
   push:
-    branches: [main]
+    branches: [main, support-windows]
   pull_request:
-    branches: [main]
+    branches: [main, support-windows]
 
 jobs:
   test:
@@ -13,8 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # os: [ubuntu-latest, macos-latest, windows-latest]
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.12", "3.13", "3.14"]
     
     steps:

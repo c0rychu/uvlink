@@ -4,12 +4,29 @@ from pathlib import Path
 
 import pytest
 
+from uvlink.path_utils import create_symlink, is_windows
 from uvlink.project import Project
 
 
 class TestProject:
     def test_hash_path(self):
-        assert Project.hash_path("/") == "8a5edab28263"
+        expected_hash = "d0023e7cb6a9" if is_windows() else "8a5edab28263"
+        assert Project.hash_path("/") == expected_hash
+
+    def test_project_init_path_resolution_with_tilde(self) -> None:
+        """Test with tilde expansion and parent directory (e.g., "~/../xxx")."""
+        user_home_path = Path.home()
+        test_dir = user_home_path / "test_project"
+
+        # Test ~/test_project resolves correctly
+        p2 = Project(project_dir="~/test_project")
+        assert p2.project_dir == test_dir.resolve()
+        assert p2.project_dir.is_absolute()
+
+        # Test ~/.. resolves to parent of HOME
+        p3 = Project(project_dir="~/..")
+        assert p3.project_dir == user_home_path.parent.resolve()
+        assert p3.project_dir.is_absolute()
 
     def test_project_init(self, tmp_path: Path) -> None:
         p = Project(project_dir=tmp_path)
@@ -17,11 +34,9 @@ class TestProject:
         assert p.project_dir == tmp_path.resolve()
         assert p.project_name == tmp_path.name
         assert p.venv_type == ".venv"
-        assert "uvlink/cache" in str(p.project_cache_dir)
+        assert "uvlink/cache" in p.project_cache_dir.as_posix()
 
-    def test_project_init_path_resolution(
-        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_project_init_path_resolution(self, tmp_path: Path) -> None:
         """Test that Project resolves relative paths and parent directory references."""
         # Create a subdirectory to test relative paths with parent directory references
         subdir = tmp_path / "subdir" / "nested"
@@ -36,28 +51,12 @@ class TestProject:
         assert p1.project_dir.is_absolute()
         assert p1.project_name == tmp_path.name
 
-        # Test with tilde expansion and parent directory (e.g., "~/../xxx")
-        # Mock HOME to be tmp_path for reliable testing
-        monkeypatch.setenv("HOME", str(tmp_path))
-        test_dir = tmp_path / "test_project"
-        test_dir.mkdir(exist_ok=True)
-
-        # Test ~/test_project resolves correctly
-        p2 = Project(project_dir="~/test_project")
-        assert p2.project_dir == test_dir.resolve()
-        assert p2.project_dir.is_absolute()
-
-        # Test ~/.. resolves to parent of HOME
-        p3 = Project(project_dir="~/..")
-        assert p3.project_dir == tmp_path.parent.resolve()
-        assert p3.project_dir.is_absolute()
-
         # Test symlink resolution
         # Create a target directory and a symlink pointing to it
         target_dir = tmp_path / "target"
         target_dir.mkdir()
         symlink_path = tmp_path / "symlink"
-        symlink_path.symlink_to(target_dir)
+        create_symlink(symlink_path, target_dir)
 
         # Project should resolve the symlink to the actual target
         p4 = Project(project_dir=symlink_path)

@@ -120,8 +120,8 @@ To override the cache location, you can either:
    $ export XDG_DATA_HOME=/my/custom/path
    $ uvlink link
    ```
-   > [!WARNING]
-   > This will affect other software using `XDG_DATA_HOME` environment variable as well!
+> [!WARNING]
+> This will affect other software using `XDG_DATA_HOME` environment variable as well!
 
 2. Use the `--cache-root` option (must be used consistently across all commands):
    ```bash

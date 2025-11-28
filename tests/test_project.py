@@ -10,11 +10,8 @@ from uvlink.project import Project
 
 class TestProject:
     def test_hash_path(self):
-        assert (
-            Project.hash_path("/") == "8a5edab28263"
-            if not is_windows()
-            else "c1dfd96eea9"
-        )
+        expected_hash = "d0023e7cb6a9" if is_windows() else "8a5edab28263"
+        assert Project.hash_path("/") == expected_hash
 
     def test_project_init_path_resolution_with_tilde(self) -> None:
         """Test with tilde expansion and parent directory (e.g., "~/../xxx")."""

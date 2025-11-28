@@ -24,7 +24,7 @@ def create_windows_junction(symlink: Path, target: Path) -> None:
     if not target.is_dir():
         raise ValueError("Target must be an existing directory for Windows junction.")
 
-    cmd = f'mklink /J "{symlink.as_posix()}" "{target.as_posix()}"'
+    cmd = f'mklink /J "{symlink.absolute()}" "{target.absolute()}"'
     subprocess.check_call(cmd, shell=True)
 
 

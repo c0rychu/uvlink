@@ -4,8 +4,9 @@ from pathlib import Path
 
 import pytest
 
-from uvlink.project import Project
 from uvlink.path_utils import create_symlink
+from uvlink.project import Project
+
 
 class TestProject:
     def test_hash_path(self):

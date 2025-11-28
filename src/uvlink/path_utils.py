@@ -31,7 +31,7 @@ def windows_junction(symlink: Path, target: Path) -> None:
         print(f"Failed to create junction. Return code: {e.returncode}")
 
 
-def execute_symlink(symlink: Path, target: Path) -> None:
+def create_symlink(symlink: Path, target: Path) -> None:
     target.mkdir(parents=True, exist_ok=True)
     try:
         symlink.symlink_to(target, target_is_directory=target.is_dir())

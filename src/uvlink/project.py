@@ -7,6 +7,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 
+from uvlink.path_utils import is_link_or_junction
+
 from . import __version__
 
 
@@ -16,11 +18,10 @@ def rm_rf(path: Path) -> None:
     Args:
         path (Path): Filesystem target to delete recursively.
     """
-
-    if path.is_symlink() or path.is_file():
-        path.unlink()
-    else:
+    if path.is_dir():
         shutil.rmtree(path)
+    else:
+        path.unlink(missing_ok=True)
 
 
 def get_uvlink_dir(*subpaths: str | Path) -> Path:
@@ -215,7 +216,8 @@ class Projects(list[Project]):
         for p in self:
             symlink = p.project_dir / p.venv_type
             is_linked = (
-                symlink.is_symlink() and symlink.resolve().parent == p.project_cache_dir
+                is_link_or_junction(symlink)
+                and symlink.resolve().parent == p.project_cache_dir
             )
             linked.append(
                 ProjectLinkInfo(

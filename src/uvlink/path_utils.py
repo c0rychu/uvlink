@@ -35,7 +35,8 @@ def create_symlink(symlink: Path, target: Path) -> None:
     target.mkdir(parents=True, exist_ok=True)
     try:
         symlink.symlink_to(target, target_is_directory=target.is_dir())
-    except OSError as e:
-        print(f"Failed to create symlink. Error: {e}")
+    except OSError:
         if is_windows():
-            windows_junction(symlink, target)
+            create_windows_junction(symlink, target)
+        else:
+            raise

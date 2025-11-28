@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   checks:
     name: Lint, Format, and Type Check
@@ -39,4 +42,3 @@ jobs:
       
       - name: Run Pyright type checking
         run: uv run pyright
-

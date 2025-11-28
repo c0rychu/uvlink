@@ -7,10 +7,10 @@ icon: lucide/download
 ## Requirements
 
 -   **Python**: 3.12+
--   **OS**: macOS or Linux (with symlink support)
+-   **OS**: macOS, Linux, and Windows(beta support)
 
-!!! warning "Platform Support"
-    Windows is not supported yet, but contributions/discussions/testing are welcome! See [related issues with `os:Windows` label](https://github.com/c0rychu/uvlink/issues?q=is%3Aissue%20state%3Aopen%20label%3Aos%3AWindows) for more details.
+!!! note "Windows Support"
+    Windows support is considered beta as of `v0.8.0`. It uses directory junctions as a fallback when symlinks are not available, which does not require admin privileges or Developer Mode. Please report any issues you encounter on Windows!
 
 ## Install Methods
 

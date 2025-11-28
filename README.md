@@ -16,10 +16,10 @@
 ## Requirements
 
 - Python 3.12+
-- macOS or Linux with symlink support
+- macOS, Linux, and Windows(beta support)
 
-> [!WARNING]
-> Windows is not supported yet, but contributions/discussions/testing are welcome! See [related issues with `os:Windows` label](https://github.com/c0rychu/uvlink/issues?q=is%3Aissue%20state%3Aopen%20label%3Aos%3AWindows) for more details.
+> [!NOTE]
+> Windows support is considered beta as of `v0.8.0`. It uses directory junctions as a fallback when symlinks are not available, which does not require admin privileges or Developer Mode. Please report any issues you encounter on Windows!
 
 
 
@@ -120,6 +120,8 @@ To override the cache location, you can either:
    $ export XDG_DATA_HOME=/my/custom/path
    $ uvlink link
    ```
+   > [!WARNING]
+   > This will affect other software using `XDG_DATA_HOME` environment variable as well!
 
 2. Use the `--cache-root` option (must be used consistently across all commands):
    ```bash

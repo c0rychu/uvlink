@@ -6,6 +6,11 @@ icon: lucide/history
 
 Note: Trying to follow the essentials of [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [SemVer](https://semver.org/spec/v2.0.0.html).
 
+## 0.8.0
+
+### Added
+- Tentative Windows support using directory junctions as a fallback when symlinks are not available. Windows junctions do not require admin privileges or Developer Mode.
+
 ## 0.7.2
 
 ### Added

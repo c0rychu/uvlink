@@ -4,7 +4,7 @@ requires = [ "uv-build>=0.9.9,<0.10" ]
 
 [project]
 name = "uvlink"
-version = "0.7.2"
+version = "0.8.0"
 description = "CLI helper for keeping Python venvs outside synced project folders"
 readme = "README.md"
 authors = [

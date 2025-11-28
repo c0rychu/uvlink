@@ -24,6 +24,9 @@ Cloud services like Dropbox, Google Drive, or iCloud often struggle with the tho
 !!! warning "Important Note on Caching"
     Since `v0.6.0`, the cache directory includes the venv type in its folder name and stores the environment under a matching subdirectory (e.g. `~/.local/share/uvlink/cache/<project-name>-<hash>-.venv/.venv`). Delete caches created with older versions and rerun `uvlink link` to migrate.
 
+!!! note "Windows Support"
+    Windows support is considered beta as of `v0.8.0`. It uses directory junctions as a fallback when symlinks are not available, which does not require admin privileges or Developer Mode. Please report any issues you encounter on Windows!
+
 ## Quick Start
 
 For installation instructions, please refer to the [Installation](installation.md) page.

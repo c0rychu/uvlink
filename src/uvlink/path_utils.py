@@ -22,7 +22,7 @@ def create_windows_junction(symlink: Path, target: Path) -> None:
     Does not require admin privileges as symlink_to.
     """
     if not target.is_dir():
-        raise ValueError("Source must be an existing directory for Windows junction.")
+        raise ValueError("Target must be an existing directory for Windows junction.")
 
     cmd = f'mklink /J "{symlink.as_posix()}" "{target.as_posix()}"'
     try:

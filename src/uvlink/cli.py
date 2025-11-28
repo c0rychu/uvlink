@@ -10,6 +10,7 @@ from rich.console import Console
 from rich.table import Table
 
 from uvlink import __version__
+from uvlink.path_utils import create_symlink, path_exists
 from uvlink.project import Project, Projects, get_uvlink_dir, rm_rf
 
 app = typer.Typer(
@@ -102,25 +103,23 @@ def link(
     else:
         if not proj.project_dir.is_dir():
             raise NotADirectoryError(f"{proj.project_dir} is not a directory")
-        else:
-            if venv.exists() or venv.is_symlink():
-                if typer.confirm(f"'{venv}' already exist, remove?", default=True):
-                    typer.echo("Removing...")
-                    rm_rf(venv.parent)
-                else:
-                    typer.echo(f"Keep current {venv}")
-            if symlink.exists() or symlink.is_symlink():
-                if typer.confirm(
-                    f"'{symlink}' already exist, overwrite?", default=True
-                ):
-                    rm_rf(symlink)
-                else:
-                    typer.echo("Cancelled.")
-                    raise typer.Abort()
-            venv.mkdir(parents=True, exist_ok=True)
-            symlink.symlink_to(venv)
-            proj.save_json_metadata_file()
-            typer.echo(f"symlink created: {symlink} -> {venv}")
+
+        if path_exists(venv):
+            if typer.confirm(f"'{venv}' already exists, remove?", default=True):
+                typer.echo("Removing...")
+                rm_rf(venv.parent)
+            else:
+                typer.echo(f"Keep current {venv}")
+        if path_exists(symlink):
+            if typer.confirm(f"'{symlink}' already exists, overwrite?", default=True):
+                rm_rf(symlink)
+            else:
+                typer.echo("Cancelled.")
+                raise typer.Abort()
+
+        create_symlink(symlink, venv)
+        proj.save_json_metadata_file()
+        typer.echo(f"symlink created: {symlink} -> {venv}")
 
 
 @app.command("ls")

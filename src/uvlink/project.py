@@ -33,7 +33,8 @@ def get_uvlink_dir(*subpaths: str | Path) -> Path:
     Returns:
         Path: Absolute path to the uvlink data directory or provided subpath.
     """
-    base = Path(os.environ.get("XDG_DATA_HOME", "~/.local/share")).expanduser()
+    default_path = Path.home() / ".local" / "share"
+    base = Path(os.environ.get("XDG_DATA_HOME", default_path)).expanduser()
     root = base / "uvlink"
     for sp in subpaths:
         root /= Path(sp)

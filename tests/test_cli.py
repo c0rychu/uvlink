@@ -113,8 +113,7 @@ def test_ls(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     assert "Is Linked" in result.stdout
 
     # Verify cache location message
-    assert "Cache Location:" in result.stdout
-    assert "uvlink/cache" in result.stdout
+    assert f"Cache Location: {cache_dir}" in result.stdout
 
     # Verify both projects appear and have correct linked status
     output_lines = result.stdout.split("\n")

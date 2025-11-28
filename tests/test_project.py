@@ -57,7 +57,7 @@ class TestProject:
         target_dir = tmp_path / "target"
         target_dir.mkdir()
         symlink_path = tmp_path / "symlink"
-        execute_symlink(symlink_path, target_dir)
+        create_symlink(symlink_path, target_dir)
 
         # Project should resolve the symlink to the actual target
         p4 = Project(project_dir=symlink_path)

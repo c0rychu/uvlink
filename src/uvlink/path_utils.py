@@ -16,7 +16,7 @@ def path_exists(path: Path) -> bool:
     return path.exists() or is_link_or_junction(path)
 
 
-def windows_junction(symlink: Path, target: Path) -> None:
+def create_windows_junction(symlink: Path, target: Path) -> None:
     """
     Windows junctions are similar to symlinks but specifically for directories.
     Does not require admin privileges as symlink_to.

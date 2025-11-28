@@ -18,10 +18,10 @@ def rm_rf(path: Path) -> None:
     Args:
         path (Path): Filesystem target to delete recursively.
     """
-    if path.is_dir():
-        shutil.rmtree(path)
+    if is_link_or_junction(path) or path.is_file():
+        path.unlink()
     else:
-        path.unlink(missing_ok=True)
+        shutil.rmtree(path)
 
 
 def get_uvlink_dir(*subpaths: str | Path) -> Path:

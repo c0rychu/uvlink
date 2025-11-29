@@ -154,6 +154,21 @@ class Project:
         metadata_path.write_text(json.dumps(metadata, indent=2, sort_keys=True) + "\n")
         return metadata_path
 
+    def is_linked_from(self, symlink: Path) -> bool:
+        """Check if a symlink is linked to this project's cache directory.
+
+        Args:
+            symlink: Path to the symlink to check.
+
+        Returns:
+            bool: True if the symlink is linked to this project's cache directory,
+                False otherwise.
+        """
+        return (
+            is_link_or_junction(symlink)
+            and symlink.resolve().parent == self.project_cache_dir
+        )
+
     @staticmethod
     def sanitize_venv_type(raw_value: str | None) -> str:
         """Validate the venv directory name is a single, portable filename."""
@@ -216,10 +231,7 @@ class Projects(list[Project]):
         linked: list[ProjectLinkInfo] = []
         for p in self:
             symlink = p.project_dir / p.venv_type
-            is_linked = (
-                is_link_or_junction(symlink)
-                and symlink.resolve().parent == p.project_cache_dir
-            )
+            is_linked = p.is_linked_from(symlink)
             linked.append(
                 ProjectLinkInfo(
                     project=p,

@@ -55,7 +55,7 @@ def main(
     dry_run: bool | None = typer.Option(
         False, "--dry-run", help="Show what would be executed without actually run it."
     ),
-    _version: bool = typer.Option(  # noqa: B008
+    _version: bool = typer.Option(
         False,
         "--version",
         "-V",

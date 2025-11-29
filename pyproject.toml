@@ -42,7 +42,24 @@ dev = [
 
 [tool.ruff]
 line-length = 88
-lint.select = [ "B", "E", "F", "I", "UP" ]
+format.indent-style = "space"
+format.quote-style = "double"
+
+# See https://docs.astral.sh/ruff/rules/ for rule codes.
+lint.select = [
+  "B",   # flake8-bugbear (finds likely bugs and design problems)
+  "E",   # pycodestyle errors
+  "F",   # Pyflakes (finds actual errors like unused imports/variables)
+  "I",   # isort (sorts imports automatically)
+  "N",   # pep8-naming (enforces naming conventions)
+  "RUF", # ruff-specific rules
+  "SIM", # flake8-simplify (detects code that can be simplified)
+  "UP",  # pyupgrade (modernizes syntax automatically, e.g. f-strings)
+  "W",   # pycodestyle warnings
+]
+lint.ignore = [
+  "RUF023", # {}.__slots__ is not sorted
+]
 
 [tool.pyrefly]
 python-interpreter-path = ".venv/bin/python"

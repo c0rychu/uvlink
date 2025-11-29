@@ -38,8 +38,8 @@ jobs:
       - name: Run Ruff linting
         run: uv run ruff check .
       
-      - name: Check Black formatting
-        run: uv run black --check --diff .
+      - name: Check Ruff formatting
+        run: uv run ruff format --check --diff .
       
       - name: Run Pyright type checking
         run: uv run pyright

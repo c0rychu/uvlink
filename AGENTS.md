@@ -9,13 +9,13 @@ Use [uv](https://docs.astral.sh/uv/) for repeatable environments:
 ```bash
 $ uv run pytest                # run the test suite
 $ uv run ruff check .          # lint
-$ uv run black .               # format
+$ uv run ruff format .         # format
 $ make ci                      # run all checks (lint, format, typecheck, tests)
 $ make fix                     # auto-fix formatting and lint issues
 ```
 
 ## Coding Style & Naming Conventions
-Code targets Python 3.12+ and follows Black’s default formatting plus Ruff’s lint rules; both tools run through pre-commit. Use descriptive module-level constants and snake_case for functions, attributes, and variables. Public CLIs should expose Typer commands with concise verbs (`link`, `ls`, `gc`). Docstrings follow the Google style already used throughout `src/uvlink`. When handling paths, prefer `pathlib.Path` over `os.path` helpers.
+Code targets Python 3.12+ and follows Ruff’s default formatting plus Ruff’s lint rules; both tools run through pre-commit. Use descriptive module-level constants and snake_case for functions, attributes, and variables. Public CLIs should expose Typer commands with concise verbs (`link`, `ls`, `gc`). Docstrings follow the Google style already used throughout `src/uvlink`. When handling paths, prefer `pathlib.Path` over `os.path` helpers.
 
 ## Testing Guidelines
 Author tests with Pytest, naming files `test_<module>.py` and functions `test_<behavior>`. Focus on validating cross-platform behavior: cache path resolution, symlink creation/removal, and garbage-collection logic. Mock filesystem access where possible so tests run on CI without touching the real cache. Aim to cover every Typer command path, including `--dry-run`.

@@ -36,7 +36,7 @@ uv run pytest
 uv run ruff check .
 
 # Format code
-uv run ruff format .
+uv run black .
 
 # Run all checks (lint, format, typecheck, tests)
 make ci
@@ -48,7 +48,7 @@ make fix
 ## Coding Style
 
 -   **Python Version**: 3.12+
--   **Formatting**: Ruff (default settings).
+-   **Formatting**: Black (default settings).
 -   **Linting**: Ruff (rules in `pyproject.toml`).
 -   **Conventions**:
     -   Snake_case for functions/variables.

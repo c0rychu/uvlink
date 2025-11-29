@@ -156,7 +156,7 @@ Each project receives a stable hash based on its absolute path, so repeated runs
 
 ## Contributing
 
-Issues and pull requests are welcome. Please keep docstrings and comments in the Google style already used throughout the codebase and run the included linters/formatters before submitting. A pre-commit configuration is provided that runs Ruff; install it with `pre-commit install` to match formatting.
+Issues and pull requests are welcome. Please keep docstrings and comments in the Google style already used throughout the codebase and run the included linters/formatters before submitting. A pre-commit configuration is provided that runs Ruff and Black; install it with `pre-commit install` to match formatting.
 
 Also, feel free to make comments/discussion at
 

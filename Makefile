@@ -9,9 +9,8 @@ all: fix ci ## Run formatting fixes and all checks/tests (fix + check)
 .PHONY: fix
 fix: ## Auto-fix lint/format issues via Ruff and Black (will modify code!)
 	uv run pyproject-fmt pyproject.toml
-	uv run ruff check --fix .
-	uv run ruff format .
 	uv run black .
+	uv run ruff check --fix .
 
 
 .PHONY: check-lint

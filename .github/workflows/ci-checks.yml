@@ -18,27 +18,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
       
-      - name: Install uv
+      - name: Install uv and set Python
         uses: astral-sh/setup-uv@v7
         with:
           version: "latest"
-          enable-cache: true
-      
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
           python-version: "3.12"
+          enable-cache: true
       
       - name: Install dependencies
         run: uv sync --dev
       
-      - name: Check pyproject.toml formatting
+      - name: Check pyproject.toml formatting (check only)
         run: uv run pyproject-fmt --check pyproject.toml
       
-      - name: Run Ruff linting
+      - name: Run Ruff linting (check only)
         run: uv run ruff check .
       
-      - name: Check Ruff formatting
+      - name: Check Ruff formatting (check only)
         run: uv run ruff format --check --diff .
       
       - name: Run Pyright type checking

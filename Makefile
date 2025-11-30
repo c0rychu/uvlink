@@ -9,6 +9,7 @@ all: fix ci ## Run formatting fixes and all checks/tests (fix + check)
 .PHONY: fix
 fix: ## Auto-fix lint/format issues via Ruff (will modify code!)
 	uv run pyproject-fmt pyproject.toml
+	# Delegate to ruff formatter to handle E501 (line too long) errors.
 	uv run ruff check --fix --ignore E501 .
 	uv run ruff format .
 

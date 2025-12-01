@@ -6,6 +6,14 @@ icon: lucide/history
 
 Note: Trying to follow the essentials of [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [SemVer](https://semver.org/spec/v2.0.0.html).
 
+## 0.8.1
+
+### Fixed
+- `uvlink link` now defaults to **not** removing existing venv directories or overwriting existing symlinks unless you explicitly confirm, reducing the chance of accidental environment loss.
+
+### Changed
+- Standardized on Ruff for both linting and formatting across the project (pre-commit, Makefile targets, contributing docs) and expanded Ruff rule configuration.
+
 ## 0.8.0
 
 ### Added

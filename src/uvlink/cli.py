@@ -105,13 +105,13 @@ def link(
             raise NotADirectoryError(f"{proj.project_dir} is not a directory")
 
         if path_exists(venv):
-            if typer.confirm(f"'{venv}' already exists, remove?", default=True):
+            if typer.confirm(f"'{venv}' already exists, remove?", default=False):
                 typer.echo("Removing...")
                 rm_rf(venv.parent)
             else:
                 typer.echo(f"Keep current {venv}")
         if path_exists(symlink):
-            if typer.confirm(f"'{symlink}' already exists, overwrite?", default=True):
+            if typer.confirm(f"'{symlink}' already exists, overwrite?", default=False):
                 rm_rf(symlink)
             else:
                 typer.echo("Cancelled.")

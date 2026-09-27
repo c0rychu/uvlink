@@ -4,7 +4,7 @@
 [![GitHub Actions - CI Tests](https://img.shields.io/github/actions/workflow/status/c0rychu/uvlink/ci-tests.yml?branch=main&label=CI%20Tests)](https://github.com/c0rychu/uvlink/actions/workflows/ci-tests.yml)
 [![GitHub - License](https://img.shields.io/github/license/c0rychu/uvlink)](https://github.com/c0rychu/uvlink/blob/main/LICENSE)
 
-`uvlink` is a Python CLI tool that caches virtual environments outside your project and symlinks them back. Perfect for `uv` users who sync code to Dropbox, Google Drive, or iCloud. Only your source code syncs, not gigabytes of `.venv` dependencies.
+`uvlink` is a CLI tool that moves heavy folders like Python's `.venv` and Node's `node_modules` out of your project into a local cache, and symlinks them back. It works for any folder you name. Perfect for developers who sync code to Dropbox, Google Drive, or iCloud. Only your source code syncs, not gigabytes of dependencies.
 
 - [Documentation](https://c0rychu.github.io/uvlink/)
 - [Changelog](docs/CHANGELOG.md)
@@ -49,7 +49,18 @@ $ cd /path/to/your/project
 $ uvlink link
 ```
 
-The `link` command creates a `.venv` symlink in your project pointing to a cached environment. By default, it uses `.venv` as the symlink name because `uv sync` installs into `.venv` by default. You can use a different name if needed, for example:
+The `link` command asks which directory to link:
+
+```
+? Which directory to link? (↑/↓, Enter)
+ ❯ .venv
+   node_modules
+   type your own
+```
+
+Use the arrow keys to move and Enter to pick. Pressing Enter right away picks `.venv`, which is where `uv sync` installs by default. uvlink then creates a `.venv` symlink in your project pointing to a cached environment. When not run in a terminal (e.g. in a script), it uses `.venv` without asking.
+
+You can also skip the menu by giving the name directly, for example:
 
 ```bash
 $ uvlink link myenv

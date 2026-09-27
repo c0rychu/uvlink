@@ -1,6 +1,8 @@
 """Test for uvlink/cli.py"""
 
+from collections.abc import Callable
 from pathlib import Path
+from typing import NoReturn
 
 import pytest
 from typer.testing import CliRunner
@@ -147,3 +149,144 @@ def test_ls(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
 
     assert p1_found, f"Project 1 ({p1.project_name}) not found in output"
     assert p2_found, f"Project 2 ({p2.project_name}) not found in output"
+
+
+class FakeQuestion:
+    """Stands in for a questionary prompt.
+
+    .unsafe_ask() returns ``answer``, or raises it if it's an exception
+    (e.g. KeyboardInterrupt for Ctrl-C).
+    """
+
+    def __init__(self, answer: str | BaseException) -> None:
+        self.answer = answer
+
+    def unsafe_ask(self) -> str:
+        if isinstance(self.answer, BaseException):
+            raise self.answer
+        return self.answer
+
+
+def not_called(*args: object, **kwargs: object) -> NoReturn:
+    raise AssertionError("the menu should not be shown")
+
+
+@pytest.fixture
+def menu(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Callable[..., Path]:
+    """Pretend to be in a terminal and script the menu answers.
+
+    Returns a function that takes the answers for the select and text
+    prompts, and returns a fresh project dir.
+    """
+    monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path / "home"))
+    # CliRunner's stdin is not a TTY, so pretend it is to get the menu.
+    monkeypatch.setattr("uvlink.cli.is_interactive", lambda: True)
+
+    def setup(selected: str | BaseException, typed: str | BaseException = "") -> Path:
+        monkeypatch.setattr(
+            "questionary.select", lambda *a, **kw: FakeQuestion(selected)
+        )
+        monkeypatch.setattr("questionary.text", lambda *a, **kw: FakeQuestion(typed))
+        project_dir = tmp_path / "myproject"
+        project_dir.mkdir()
+        return project_dir
+
+    return setup
+
+
+@pytest.mark.parametrize(
+    ("selected", "typed", "expected_name"),
+    [
+        (".venv", "", ".venv"),
+        ("node_modules", "", "node_modules"),
+        ("type your own", "my-env", "my-env"),
+    ],
+)
+def test_link_menu(
+    menu: Callable[..., Path], selected: str, typed: str, expected_name: str
+) -> None:
+    project_dir = menu(selected, typed)
+
+    result = runner.invoke(app, ["--project-dir", str(project_dir), "link"])
+    assert result.exit_code == 0, result.stdout
+
+    symlink = project_dir / expected_name
+    assert symlink.is_symlink() or symlink.is_junction()
+
+
+@pytest.mark.parametrize(
+    ("selected", "typed"),
+    [
+        (KeyboardInterrupt(), ""),  # Ctrl-C at the menu
+        ("type your own", KeyboardInterrupt()),  # Ctrl-C at the name prompt
+    ],
+)
+def test_link_menu_ctrl_c(
+    menu: Callable[..., Path],
+    selected: str | BaseException,
+    typed: str | BaseException,
+) -> None:
+    project_dir = menu(selected, typed)
+
+    result = runner.invoke(app, ["--project-dir", str(project_dir), "link"])
+    assert result.exit_code == 130  # Typer's exit code for Ctrl-C (128 + SIGINT)
+    assert list(project_dir.iterdir()) == []
+
+
+def test_link_menu_dry_run(menu: Callable[..., Path]) -> None:
+    project_dir = menu("node_modules")
+
+    result = runner.invoke(
+        app, ["--project-dir", str(project_dir), "link", "--dry-run"]
+    )
+    assert result.exit_code == 0
+    assert result.stdout.startswith("Would execute: ln -s ")
+    assert result.stdout.strip().endswith(str(project_dir / "node_modules"))
+    assert list(project_dir.iterdir()) == []
+
+
+def test_link_menu_not_shown_for_missing_project_dir(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr("uvlink.cli.is_interactive", lambda: True)
+    monkeypatch.setattr("questionary.select", not_called)
+
+    result = runner.invoke(app, ["--project-dir", str(tmp_path / "missing"), "link"])
+    assert isinstance(result.exception, NotADirectoryError)
+
+
+def test_link_without_terminal_uses_default(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path / "home"))
+    monkeypatch.setattr("uvlink.cli.is_interactive", lambda: False)
+    monkeypatch.setattr("questionary.select", not_called)
+    project_dir = tmp_path / "myproject"
+    project_dir.mkdir()
+
+    result = runner.invoke(app, ["--project-dir", str(project_dir), "link"])
+    assert result.exit_code == 0
+    assert (project_dir / ".venv").is_symlink() or (project_dir / ".venv").is_junction()
+
+
+@pytest.mark.parametrize(
+    ("stdin_tty", "stdout_tty", "expected"),
+    [(True, True, True), (True, False, False), (False, True, False)],
+)
+def test_is_interactive(
+    monkeypatch: pytest.MonkeyPatch, stdin_tty: bool, stdout_tty: bool, expected: bool
+) -> None:
+    from uvlink.cli import is_interactive
+
+    monkeypatch.setattr("sys.stdin.isatty", lambda: stdin_tty)
+    monkeypatch.setattr("sys.stdout.isatty", lambda: stdout_tty)
+    assert is_interactive() is expected
+
+
+def test_check_venv_type() -> None:
+    from uvlink.cli import check_venv_type
+
+    assert check_venv_type("my-env") is True
+    assert "path separators" in str(check_venv_type("a/b"))
+    assert "empty" in str(check_venv_type(""))
+    assert "empty" in str(check_venv_type("   "))

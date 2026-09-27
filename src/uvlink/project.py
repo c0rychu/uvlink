@@ -43,6 +43,8 @@ def get_uvlink_dir(*subpaths: str | Path) -> Path:
 
 FILENAME_PATTERN = re.compile(r"^[A-Za-z0-9._-]+$")
 
+DEFAULT_VENV_TYPE = ".venv"
+
 
 class Project:
     """Encapsulate derived paths for a uvlink-managed project.
@@ -66,7 +68,7 @@ class Project:
     def __init__(
         self,
         project_dir: str | Path | None = None,
-        venv_type: str = ".venv",
+        venv_type: str = DEFAULT_VENV_TYPE,
         cache_root: str | Path | None = None,
     ):
         """Initialize project metadata from the filesystem.
@@ -173,7 +175,7 @@ class Project:
     def sanitize_venv_type(raw_value: str | None) -> str:
         """Validate the venv directory name is a single, portable filename."""
 
-        candidate = (raw_value or ".venv").strip()
+        candidate = (raw_value or DEFAULT_VENV_TYPE).strip()
         if candidate in {"", ".", ".."}:
             raise ValueError("venv_type must not be empty or relative")
         if os.sep in candidate or (os.altsep and os.altsep in candidate):

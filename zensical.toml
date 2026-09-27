@@ -17,7 +17,7 @@ site_name = "uvlink"
 # meaningful description of the site content for use by search engines.
 #
 # Read more: https://zensical.org/docs/setup/basics/#site_description
-site_description = "CLI helper for keeping Python venvs outside synced project folders"
+site_description = "CLI helper for keeping .venv, node_modules, and other heavy folders outside synced project folders"
 
 # The site_author attribute. This is used in the HTML head element.
 #

@@ -1,10 +1,10 @@
 # uvlink
 
-> CLI helper for keeping Python venvs outside synced project folders (Dropbox, iCloud, Google Drive).
+> CLI helper for keeping .venv, node_modules, and other heavy folders outside synced project folders (Dropbox, iCloud, Google Drive).
 
 ## Summary
 
-`uvlink` solves the problem of syncing thousands of small files in Python virtual environments (`.venv`) to cloud storage. It moves the heavy `.venv` directory to a local cache (outside the synced folder) and replaces it with a lightweight symlink.
+`uvlink` solves the problem of syncing thousands of small files in dependency folders, like Python virtual environments (`.venv`) and Node's `node_modules`, to cloud storage. It moves the heavy folder to a local cache (outside the synced folder) and replaces it with a lightweight symlink. It works for any folder name you choose.
 
 ## Installation
 
@@ -14,13 +14,13 @@ uv tool install uvlink
 
 ## Usage
 
-1.  **Link a project**: Navigate to your project and run `uvlink link`.
+1.  **Link a project**: Navigate to your project and run `uvlink link`, then pick `.venv`, `node_modules`, or type your own folder name. Or name it directly, e.g. `uvlink link node_modules`.
 2.  **Sync dependencies**: Run `uv sync` to install packages into the linked environment.
 3.  **List linked projects**: Run `uvlink ls` to see all cached environments.
 4.  **Clean up**: Run `uvlink gc` to remove caches for projects that are no longer linked.
 
 ## Key Features
 
--   **Prevents Sync Issues**: Keeps `.venv` out of cloud storage.
+-   **Prevents Sync Issues**: Keeps `.venv`, `node_modules`, or any folder you choose out of cloud storage.
 -   **Seamless Integration**: Works with `uv`, VS Code, and standard terminals.
 -   **Automatic Caching**: Manages environments in `~/.local/share/uvlink/cache`.

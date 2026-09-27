@@ -6,6 +6,12 @@ icon: lucide/history
 
 Note: Trying to follow the essentials of [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [SemVer](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Changed
+- `uvlink link` without `VENV_TYPE` now shows an arrow-key menu to pick `.venv`, `node_modules`, or a custom name. Pressing Enter right away picks `.venv`. When not run in a terminal, it still uses `.venv` without asking.
+- New dependency: [`questionary`](https://github.com/tmbo/questionary) for the menu.
+
 ## 0.8.1
 
 ### Fixed

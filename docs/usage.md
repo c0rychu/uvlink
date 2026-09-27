@@ -14,7 +14,7 @@ Creates the symlink and cache. The `link` command creates a `.venv` symlink in y
 uvlink link [VENV_TYPE]
 ```
 
--   **`VENV_TYPE`**: Optional. Defaults to `.venv`. You can use a different name if needed, for example `uvlink link myenv` creates a `myenv` symlink instead.
+-   **`VENV_TYPE`**: Optional. If omitted, `link` shows an arrow-key menu to pick `.venv` (the default), `node_modules`, or a name you type. When not run in a terminal, it uses `.venv` without asking. You can also give a name directly, for example `uvlink link myenv` creates a `myenv` symlink.
 
 ### `ls`
 

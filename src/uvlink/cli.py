@@ -26,6 +26,7 @@ app = typer.Typer(
         "in a global cache and symlink it back."
     ),
     no_args_is_help=True,
+    context_settings={"help_option_names": ["-h", "--help"]},
 )
 
 console = Console()

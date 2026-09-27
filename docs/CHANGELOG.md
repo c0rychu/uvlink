@@ -8,6 +8,9 @@ Note: Trying to follow the essentials of [Keep a Changelog](https://keepachangel
 
 ## Unreleased
 
+### Added
+- `-h` as a short form of `--help`, for `uvlink` and every subcommand.
+
 ### Changed
 - `uvlink link` without `VENV_TYPE` now shows an arrow-key menu to pick `.venv`, `node_modules`, or a custom name. Pressing Enter right away picks `.venv`. When not run in a terminal, it still uses `.venv` without asking.
 - New dependency: [`questionary`](https://github.com/tmbo/questionary) for the menu.

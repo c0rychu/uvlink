@@ -21,6 +21,13 @@ def test_version():
     assert result.stdout.strip() == f"uvlink {__version__}"
 
 
+@pytest.mark.parametrize("args", [["-h"], ["link", "-h"], ["ls", "-h"], ["gc", "-h"]])
+def test_short_help(args: list[str]) -> None:
+    result = runner.invoke(app, args)
+    assert result.exit_code == 0
+    assert "Usage:" in result.stdout
+
+
 def test_link_dry_run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     # Mock XDG_DATA_HOME to avoid touching real user data
     fake_home = tmp_path / "home"

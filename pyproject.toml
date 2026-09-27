@@ -16,12 +16,12 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3.15",
 ]
 dependencies = [
   "rich>=14.2",
   "typer>=0.20",
 ]
-
 urls.Changelog = "https://c0rychu.github.io/uvlink/CHANGELOG/"
 urls.Documentation = "https://c0rychu.github.io/uvlink/"
 urls.Homepage = "https://github.com/c0rychu/uvlink"
@@ -44,7 +44,6 @@ dev = [
 line-length = 88
 format.indent-style = "space"
 format.quote-style = "double"
-
 # See https://docs.astral.sh/ruff/rules/ for rule codes.
 lint.select = [
   "B",   # flake8-bugbear (finds likely bugs and design problems)

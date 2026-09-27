@@ -4,7 +4,7 @@ requires = [ "uv-build>=0.9.9,<0.10" ]
 
 [project]
 name = "uvlink"
-version = "0.8.1"
+version = "0.9.0"
 description = "CLI helper for keeping .venv, node_modules, and other heavy folders outside synced project folders"
 readme = "README.md"
 authors = [

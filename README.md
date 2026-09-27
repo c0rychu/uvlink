@@ -120,6 +120,14 @@ $ uvlink --project-dir /path/to/project link [VENV_TYPE]
 
 Custom `[VENV_TYPE]` are helpful when sharing a cache across tooling expectations (e.g., `.venv-prod`, `.venv-dev`).
 
+**Link `node_modules`:**
+
+```bash
+$ uvlink link node_modules
+```
+
+Works with bun, yarn, deno, and pnpm 11 to 12.5. pnpm 12.6 or later needs `hoist: false` in `pnpm-workspace.yaml`. npm replaces the symlink with a real folder, so it doesn't work. See [Linking `node_modules`](https://c0rychu.github.io/uvlink/usage/#linking-node_modules) for details, including Next.js.
+
 **Custom Cache Location:**
 
 The default cache location is `$XDG_DATA_HOME/uvlink/cache` if `XDG_DATA_HOME` is set, otherwise it falls back to `~/.local/share/uvlink/cache`.

@@ -23,5 +23,8 @@ Author tests with Pytest, naming files `test_<module>.py` and functions `test_<b
 ## Commit & Pull Request Guidelines
 Existing commits follow Conventional-Commit style (`feat:`, `fix:`, `chore:`). Keep messages imperative and scoped to one change set. Pull requests should describe the problem, outline the fix, and note any platform-specific implications (e.g., Windows symlink requirements). Link related issues, include reproduction steps or command output when relevant, and confirm that `uv run pytest` and the pre-commit hooks pass before requesting review.
 
+## Releases
+When bumping the version for a release, revisit the tool table in the "Linking `node_modules`" section of `docs/usage.md`. JS tools change their symlink handling often (pnpm 12.6 broke it just after 12.5.1 fixed it). Re-test the latest npm, pnpm, yarn, bun, deno, Vite, and Next.js against a `node_modules` created by `uvlink link node_modules`: run install, a repeat install, `add`, and a clean install, and check that the symlink survives and packages still load. Update the versions and the "Tested on" date, and keep the short summary in `README.md` in sync.
+
 ## Platform Notes
 Symlink creation currently requires Windows Developer Mode or an elevated shell. Mention this in PRs that touch linking behavior, and double-check cache paths resolve sensibly on `%LOCALAPPDATA%` when modifying `get_uvlink_dir`.

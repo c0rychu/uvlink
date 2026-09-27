@@ -68,6 +68,43 @@ Swap the `.venv` symlink name for something else:
 uvlink link .my-custom-venv
 ```
 
+### Linking `node_modules`
+
+```bash
+uvlink link node_modules
+```
+
+Not every JavaScript tool accepts a symlinked `node_modules`. Tested on macOS in September 2026:
+
+| Tool | Works? | Notes |
+|---|---|---|
+| bun 1.3 | ✅ | |
+| yarn 1 and yarn 4 | ✅ | Yarn 4 needs `nodeLinker: node-modules`. Its default (Plug'n'Play) has no `node_modules`. |
+| deno 2.9 | ✅ | |
+| pnpm 11 to 12.5 | ✅ | |
+| pnpm 12.6 or later | ⚠️ | Fails with `workspace hoist directory is not a real directory`, unless you set `hoist: false` (see below). |
+| pnpm 10 | ❌ | Fails with `ENOTDIR`. |
+| npm 11 | ❌ | Deletes the symlink and installs into a real `node_modules` folder, which then syncs again. See [npm/cli#3669](https://github.com/npm/cli/issues/3669). |
+| Vite 8 | ✅ | |
+| Next.js 16 (Turbopack) | ⚠️ | Crashes with `Symlink [project]/node_modules is invalid, it points out of the filesystem root`, unless you use `next build --webpack` or set `turbopack.root` (see below). |
+
+For pnpm 12.6 or later, turn off hoisting in `pnpm-workspace.yaml`:
+
+```yaml
+# pnpm refuses to hoist into a symlinked node_modules.
+hoist: false
+```
+
+Every package still sees its own declared dependencies. Only packages that use a dependency without declaring it will break.
+
+For Next.js with Turbopack, set `turbopack.root` to a folder that contains both your project and the uvlink cache, e.g. your home directory:
+
+```js
+// next.config.js
+const os = require("node:os");
+module.exports = { turbopack: { root: os.homedir() } };
+```
+
 ### Custom Cache Location
 
 The default cache location is `$XDG_DATA_HOME/uvlink/cache` if `XDG_DATA_HOME` is set, otherwise it falls back to `~/.local/share/uvlink/cache`.

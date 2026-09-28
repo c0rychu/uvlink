@@ -26,6 +26,8 @@ uvlink ls
 
 Shows all projects with cached environments and their link status. Projects where the symlink has been removed (e.g., via `rm .venv`) will show as "Not Linked" (❌). You can relink them by running `uvlink link` again in that project directory.
 
+To only list projects under a path (recursively), give the path, for example `uvlink ls .` for the current directory.
+
 ### `gc`
 
 Garbage collect unlinked caches.

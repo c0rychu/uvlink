@@ -158,6 +158,33 @@ def test_ls(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     assert p2_found, f"Project 2 ({p2.project_name}) not found in output"
 
 
+def test_ls_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    cache_dir = tmp_path / "cache"
+    # "ab" checks that PATH "a" doesn't match a sibling that shares its prefix.
+    dirs = {name: tmp_path / name for name in ["a/p1", "a/sub/p2", "ab/p3"]}
+    for d in dirs.values():
+        d.mkdir(parents=True)
+        result = runner.invoke(
+            app, ["--cache-root", str(cache_dir), "--project-dir", str(d), "link"]
+        )
+        assert result.exit_code == 0
+    hashes = {name: Project(project_dir=d).project_hash for name, d in dirs.items()}
+
+    def listed(*args: str) -> set[str]:
+        result = runner.invoke(app, ["--cache-root", str(cache_dir), "ls", *args])
+        assert result.exit_code == 0
+        return {name for name, h in hashes.items() if h in result.stdout}
+
+    assert listed() == {"a/p1", "a/sub/p2", "ab/p3"}
+    assert listed(str(tmp_path / "a")) == {"a/p1", "a/sub/p2"}
+    assert listed(str(tmp_path / "a/sub/p2")) == {"a/sub/p2"}
+    assert listed(str(tmp_path / "nowhere")) == set()
+
+    # A relative path is resolved against the current directory.
+    monkeypatch.chdir(tmp_path / "ab")
+    assert listed(".") == {"ab/p3"}
+
+
 class FakeQuestion:
     """Stands in for a questionary prompt.
 

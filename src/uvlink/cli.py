@@ -219,11 +219,19 @@ def link(
 @app.command("ls")
 def list_venvs(
     ctx: typer.Context,
+    path: Path | None = typer.Argument(  # noqa: B008
+        None,
+        resolve_path=True,
+        help="Only list projects under this path (recursively).",
+    ),
 ) -> None:
     """List status of existing projects."""
     cache_root = ctx.obj["cache_root"]
     ps = Projects(base_path=cache_root) if cache_root else Projects()
     linked = ps.get_list()
+    if path is not None:
+        # is_relative_to() compares whole path parts, so "/a" doesn't match "/ab".
+        linked = [row for row in linked if row.project.project_dir.is_relative_to(path)]
     table = Table(box=box.MINIMAL)
 
     table.add_column("Cache-ID", no_wrap=True)

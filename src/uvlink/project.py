@@ -3,6 +3,7 @@ import json
 import os
 import re
 import shutil
+import sys
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -217,7 +218,14 @@ class Projects(list[Project]):
 
         self.base_path = Path(base_path)
         for file in self.base_path.glob("*/project.json"):
-            self.append(Project.from_json(file))
+            try:
+                self.append(Project.from_json(file))
+            except (OSError, ValueError, KeyError) as e:
+                # One unreadable cache entry (corrupt JSON, missing keys,
+                # bad encoding) must not break listing the rest.
+                print(f"Warning: skipping unreadable metadata file: {file} ({e})",
+                      file=sys.stderr)
+                continue
 
         self.sort(key=lambda p: (p.project_dir.as_posix(), p.venv_type))
 

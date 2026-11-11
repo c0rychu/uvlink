@@ -104,6 +104,43 @@ class TestProject:
             Project.sanitize_venv_type("a$b")
 
 
+class TestProjectsDiscovery:
+    def _seed_good(self, cache: Path, project_dir: Path) -> Project:
+        from uvlink.project import Project
+
+        proj = Project(project_dir=project_dir)
+        entry = cache / ("good-%s-.venv" % proj.project_hash)
+        entry.mkdir(parents=True)
+        proj.project_cache_dir = entry
+        proj.save_json_metadata_file()
+        return proj
+
+    def test_corrupt_metadata_files_are_skipped(self, tmp_path, capsys):
+        import json
+
+        from uvlink.project import Projects
+
+        cache = tmp_path / "cache"
+        good_proj = self._seed_good(cache, tmp_path / "myproject")
+
+        broken = cache / "broken-deadbeef-.venv"
+        broken.mkdir(parents=True)
+        (broken / "project.json").write_text("{not valid json", encoding="utf-8")
+
+        incomplete = cache / "odd-deadbeef-.venv"
+        incomplete.mkdir(parents=True)
+        (incomplete / "project.json").write_text(
+            json.dumps({"project_dir": "/x"}), encoding="utf-8"
+        )
+
+        projects = Projects(base_path=cache)
+
+        assert len(projects) == 1
+        assert projects[0].project_dir == good_proj.project_dir
+        _, err = capsys.readouterr()
+        assert "skipping unreadable metadata file" in err
+
+
 def test_get_uvlink_dir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     # Use tmp_path instead of hardcoded /tmp path for better cleanup
     fake_xdg = tmp_path / "fake_xdg"
